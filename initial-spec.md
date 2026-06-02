@@ -3,7 +3,7 @@ earlygame, early midgame, midgame, mid-lategame, lategame. The players get point
 
 Characters come with stats that indicate their usefulness in each phase, e.g. Wrys: 3/1/1/0/0 or Wolf: 0/0/1/2/3, or Frey: 1/1/2/2/2, or Boah: 0/0/3/1/1. The maximum power for a section is 4, e.g. Gotoh and Nagi are 0/0/0/0/4 since they only appear there. Players take turns to draft characters, being able to see what was picked, and the game always displays the totals by phase for each player. Although there's also a variant that hides each player's picks, only showing the totals at 5 picks and at the end of the game.
 
-Players can optionally enable bonuses and penalties for the draft. They are as follows: you need at least 1 of the following:
+Players can optionally enable bonuses for the draft. They are as follows: you need at least 1 of the following:
 
 - mage (pierce defense)
 - cleric (healing)
@@ -11,7 +11,7 @@ Players can optionally enable bonuses and penalties for the draft. They are as f
 - knight/cavalier (defense)
 - cavalier/pegasus (movement)
 
-Players take a 1-point penalty for each missed group. (2 points for 5-6 player games)
+Players gain a 1-point bonus for each covered group.
 
 For covering the weapon triangle, each completed trio of sword/lance/axe gives +1 point.
 

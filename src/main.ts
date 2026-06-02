@@ -1,4 +1,8 @@
 import './styles.css'
+import { CHARACTER_ROSTER } from './data/characters'
+import { logCharacterTotalMismatches } from './data/validation'
+
+logCharacterTotalMismatches(CHARACTER_ROSTER)
 
 const app = document.querySelector<HTMLDivElement>('#app')
 
