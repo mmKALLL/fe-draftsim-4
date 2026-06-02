@@ -11,7 +11,7 @@ Players can optionally enable bonuses and penalties for the draft. They are as f
 - knight/cavalier (defense)
 - cavalier/pegasus (movement)
 
-Players take a 1-point penalty for each missed group.
+Players take a 1-point penalty for each missed group. (2 points for 5-6 player games)
 
 For covering the weapon triangle, each completed trio of sword/lance/axe gives +1 point.
 
@@ -68,111 +68,57 @@ Teams:
 (names go here)
 
 [spoiler=units remaining]Frey
-
 Norne
-
 Cain
-
 Abel
-
 Caeda
-
 Gordin
-
 Draug
-
 Wrys
-
 Ogma
-
 Bord
-
 Cord
-
 Barst
-
 Castor
-
 Darros
-
 Julian
-
 Lena
-
 Navarre
-
 Merric
-
 Matthis
-
 Hardin
-
 Sedgar
-
 Wolf
-
 Roshea
-
 Vyland
-
 Wendell
-
 Rickard
-
 Athena
-
 Bantu
-
 Caesar
-
 Radd
-
 Roger
-
 Jeorge
-
 Maria
-
 Minerva
-
 Linde
-
 Jake
-
 Midia
-
 Dolph
-
 Macellan
-
 Tomas
-
 Boah
-
 Horace
-
 Beck
-
 Astram
-
 Palla
-
 Catria
-
 Arran
-
 Samson
-
 Xane
-
 Etzel
-
 Est
-
 Tiki
-
 Lorenz
-
 Ymir
-
 Elice
