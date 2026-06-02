@@ -5,9 +5,9 @@ Characters come with stats that indicate their usefulness in each phase, e.g. Wr
 
 Players can optionally enable bonuses for the draft. They are as follows: you need at least 1 of the following:
 
-- mage (pierce defense)
+- mage (magic)
 - cleric (healing)
-- archer/ballista (flying counterplay)
+- archer/ballista (pierce)
 - knight/cavalier (defense)
 - cavalier/pegasus (movement)
 

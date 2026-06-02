@@ -64,7 +64,7 @@ export interface CoverageGroup {
   fulfilledByClasses: readonly Class[]
   fulfilledByWeapons: readonly WeaponType[]
   fulfilledByMovements: readonly MovementType[]
-  missedPenalty: number
+  bonus: number
 }
 
 export interface DraftSettings {

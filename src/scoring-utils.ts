@@ -36,13 +36,13 @@ export interface RankedPhasesScore {
 
 export interface CoverageGroupScore {
   group: CoverageGroup
-  satisfied: boolean
-  penalty: number
+  covered: boolean
+  bonus: number
 }
 
 export interface CoverageScore {
   groups: readonly CoverageGroupScore[]
-  totalPenalty: number
+  total: number
 }
 
 export interface TeamBonusScore {
@@ -185,7 +185,7 @@ export const scoreRankedPhases = (teams: readonly ScoringTeam[], playerCount?: P
 
 export const scoreCoverage = (characters: readonly CharacterCard[], coverageGroups: readonly CoverageGroup[] = REQUIRED_COVERAGE_GROUPS): CoverageScore => {
   const groups = coverageGroups.map((group) => {
-    const satisfied = characters.some(
+    const covered = characters.some(
       (character) =>
         group.fulfilledByClasses.includes(character.class) ||
         character.weapons.some((weapon) => group.fulfilledByWeapons.includes(weapon)) ||
@@ -194,14 +194,14 @@ export const scoreCoverage = (characters: readonly CharacterCard[], coverageGrou
 
     return {
       group,
-      satisfied,
-      penalty: satisfied ? 0 : group.missedPenalty,
+      covered,
+      bonus: covered ? group.bonus : 0,
     }
   })
 
   return {
     groups,
-    totalPenalty: groups.reduce((total, group) => total + group.penalty, 0),
+    total: groups.reduce((total, group) => total + group.bonus, 0),
   }
 }
 
@@ -247,7 +247,7 @@ export const scoreTeamBonuses = (characters: readonly CharacterCard[]): TeamBonu
     weaponTriangleBonus,
     hasPegasusSisters: pegasusSistersBonus > 0,
     pegasusSistersBonus,
-    total: coverage.totalPenalty + weaponTriangleBonus + pegasusSistersBonus,
+    total: coverage.total + weaponTriangleBonus + pegasusSistersBonus,
   }
 }
 
