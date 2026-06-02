@@ -1,11 +1,13 @@
 import type { CoverageGroup, DraftSettings, PhaseScoreSpread, PlayerCount, SoloScoringThreshold } from '../types'
 
+export const VERSUS_SCORE_SPREAD = [5, 3, 2, 1, 0, 0] as const satisfies PhaseScoreSpread
+
 export const PHASE_SCORE_SPREADS = {
-  2: [2, 0],
-  3: [4, 2, 0],
-  4: [5, 3, 2, 0],
-  5: [5, 3, 2, 1, -2],
-  6: [8, 5, 3, 2, 1, -2],
+  2: [5, 3],
+  3: [5, 3, 2],
+  4: [5, 3, 2, 1],
+  5: [5, 3, 2, 1, 0],
+  6: VERSUS_SCORE_SPREAD,
 } as const satisfies Record<PlayerCount, PhaseScoreSpread>
 
 export const DEFAULT_DRAFT_SETTINGS = {
@@ -19,33 +21,48 @@ export const DEFAULT_DRAFT_SETTINGS = {
 
 export const REQUIRED_COVERAGE_GROUPS = [
   {
-    id: 'magic',
-    label: 'Magic',
-    fulfilledBy: ['mage', 'sage', 'bishop', 'darkMage', 'sorcerer'],
+    id: 'mage',
+    label: 'Mage',
+    hint: 'Pierces defense',
+    fulfilledByClasses: [],
+    fulfilledByWeapons: ['tome'],
+    fulfilledByMovements: [],
     missedPenalty: -1,
   },
   {
-    id: 'healing',
-    label: 'Healing',
-    fulfilledBy: ['curate', 'cleric', 'bishop', 'sage', 'sorcerer'],
+    id: 'cleric',
+    label: 'Cleric',
+    hint: 'Healing',
+    fulfilledByClasses: [],
+    fulfilledByWeapons: ['staff'],
+    fulfilledByMovements: [],
     missedPenalty: -1,
   },
   {
-    id: 'pierce',
-    label: 'Pierce',
-    fulfilledBy: ['archer', 'sniper', 'hunter', 'horseman', 'ballistician'],
+    id: 'ranged',
+    label: 'Ranged',
+    hint: 'Bow / ballista',
+    fulfilledByClasses: [],
+    fulfilledByWeapons: ['bow', 'ballista'],
+    fulfilledByMovements: [],
     missedPenalty: -1,
   },
   {
     id: 'defense',
     label: 'Defense',
-    fulfilledBy: ['knight', 'general', 'cavalier', 'paladin'],
+    hint: 'Knight / cavalier',
+    fulfilledByClasses: ['knight', 'general', 'cavalier', 'paladin'],
+    fulfilledByWeapons: [],
+    fulfilledByMovements: [],
     missedPenalty: -1,
   },
   {
-    id: 'movement',
-    label: 'Movement',
-    fulfilledBy: ['cavalier', 'paladin', 'horseman', 'pegasusKnight', 'dracoknight'],
+    id: 'mobility',
+    label: 'Mobility',
+    hint: 'Cavalier / pegasus',
+    fulfilledByClasses: ['cavalier', 'paladin', 'horseman', 'pegasusKnight', 'dracoknight'],
+    fulfilledByWeapons: [],
+    fulfilledByMovements: ['cavalry', 'flier'],
     missedPenalty: -1,
   },
 ] as const satisfies readonly CoverageGroup[]
@@ -60,17 +77,17 @@ export const WEAPON_TRIANGLE_TRIO_BONUS = 1
 
 export const SOLO_SCORING_THRESHOLD_PLACEHOLDERS = [
   {
-    phase: 'earlygame',
+    phase: 'early',
     minimumPower: 10,
     points: 5,
   },
   {
-    phase: 'earlygame',
+    phase: 'early',
     minimumPower: 7,
     points: 3,
   },
   {
-    phase: 'earlygame',
+    phase: 'early',
     minimumPower: 5,
     points: 2,
   },

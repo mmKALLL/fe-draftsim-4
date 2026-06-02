@@ -1,4 +1,6 @@
 import './styles.css'
+import { createRoot } from 'react-dom/client'
+import { App } from './App'
 import { CHARACTER_ROSTER } from './data/characters'
 import { logCharacterTotalMismatches } from './data/validation'
 
@@ -10,9 +12,4 @@ if (!app) {
   throw new Error('Missing #app root')
 }
 
-const root = document.createElement('main')
-root.className = 'app-root'
-root.dataset.app = 'fe-draftsim'
-root.setAttribute('aria-label', 'FE11 Draft Sim')
-
-app.replaceChildren(root)
+createRoot(app).render(App())

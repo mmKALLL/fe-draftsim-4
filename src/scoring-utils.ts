@@ -1,11 +1,4 @@
-import {
-  PEGASUS_SISTERS,
-  PEGASUS_SISTERS_BONUS,
-  PHASE_SCORE_SPREADS,
-  REQUIRED_COVERAGE_GROUPS,
-  WEAPON_TRIANGLE,
-  WEAPON_TRIANGLE_TRIO_BONUS,
-} from './data/rules'
+import { PEGASUS_SISTERS, PEGASUS_SISTERS_BONUS, PHASE_SCORE_SPREADS, REQUIRED_COVERAGE_GROUPS, WEAPON_TRIANGLE, WEAPON_TRIANGLE_TRIO_BONUS } from './data/rules'
 import { GAME_PHASES, type CharacterCard, type CoverageGroup, type GamePhase, type PhasePower, type PlayerCount, type SoloScoringThreshold, type WeaponType } from './types'
 
 export interface ScoringTeam {
@@ -99,23 +92,22 @@ export const sumPhasePower = (characters: readonly CharacterCard[]): PhasePower 
       total[3] + character.phasePower[3],
       total[4] + character.phasePower[4],
     ],
-    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0]
   )
 
-export const sumCharacterTotals = (characters: readonly CharacterCard[]): number =>
-  characters.reduce((total, character) => total + character.total, 0)
+export const sumCharacterTotals = (characters: readonly CharacterCard[]): number => characters.reduce((total, character) => total + character.total, 0)
 
 export const getPhasePower = (phasePower: PhasePower, phase: GamePhase): number => {
   switch (phase) {
-    case 'earlygame':
+    case 'early':
       return phasePower[0]
-    case 'earlyMidgame':
+    case 'earlymid':
       return phasePower[1]
-    case 'midgame':
+    case 'mid':
       return phasePower[2]
-    case 'midLategame':
+    case 'midlate':
       return phasePower[3]
-    case 'lategame':
+    case 'late':
       return phasePower[4]
   }
 }
@@ -140,11 +132,11 @@ export const scoreRankedPhase = (entries: readonly RankedPhaseEntry[], spread: r
 }
 
 const createEmptyPhaseScores = (): Record<GamePhase, number> => ({
-  earlygame: 0,
-  earlyMidgame: 0,
-  midgame: 0,
-  midLategame: 0,
-  lategame: 0,
+  early: 0,
+  earlymid: 0,
+  mid: 0,
+  midlate: 0,
+  late: 0,
 })
 
 export const scoreRankedPhases = (teams: readonly ScoringTeam[], playerCount?: PlayerCount): RankedPhasesScore => {
@@ -157,7 +149,7 @@ export const scoreRankedPhases = (teams: readonly ScoringTeam[], playerCount?: P
         phaseScores: createEmptyPhaseScores(),
         total: 0,
       },
-    ]),
+    ])
   )
   const phasePowerByTeam = new Map(teams.map((team) => [team.id, sumPhasePower(team.characters)]))
 
@@ -167,7 +159,7 @@ export const scoreRankedPhases = (teams: readonly ScoringTeam[], playerCount?: P
         id: team.id,
         phasePower: getPhasePower(phasePowerByTeam.get(team.id) ?? [0, 0, 0, 0, 0], phase),
       })),
-      spread,
+      spread
     )
 
     for (const score of scores) {
@@ -191,12 +183,14 @@ export const scoreRankedPhases = (teams: readonly ScoringTeam[], playerCount?: P
   }
 }
 
-export const scoreCoverage = (
-  characters: readonly CharacterCard[],
-  coverageGroups: readonly CoverageGroup[] = REQUIRED_COVERAGE_GROUPS,
-): CoverageScore => {
+export const scoreCoverage = (characters: readonly CharacterCard[], coverageGroups: readonly CoverageGroup[] = REQUIRED_COVERAGE_GROUPS): CoverageScore => {
   const groups = coverageGroups.map((group) => {
-    const satisfied = characters.some((character) => group.fulfilledBy.includes(character.class))
+    const satisfied = characters.some(
+      (character) =>
+        group.fulfilledByClasses.includes(character.class) ||
+        character.weapons.some((weapon) => group.fulfilledByWeapons.includes(weapon)) ||
+        group.fulfilledByMovements.includes(character.movement)
+    )
 
     return {
       group,
@@ -212,9 +206,7 @@ export const scoreCoverage = (
 }
 
 export const countWeaponTriangleTrios = (characters: readonly CharacterCard[]): number => {
-  const counts = new Map<WeaponType, number>(
-    WEAPON_TRIANGLE.map((weapon) => [weapon, 0]),
-  )
+  const counts = new Map<WeaponType, number>(WEAPON_TRIANGLE.map((weapon) => [weapon, 0]))
 
   for (const character of characters) {
     for (const weapon of new Set(character.weapons)) {
@@ -227,8 +219,7 @@ export const countWeaponTriangleTrios = (characters: readonly CharacterCard[]): 
   return Math.min(...WEAPON_TRIANGLE.map((weapon) => counts.get(weapon) ?? 0))
 }
 
-export const scoreWeaponTriangle = (characters: readonly CharacterCard[]): number =>
-  countWeaponTriangleTrios(characters) * WEAPON_TRIANGLE_TRIO_BONUS
+export const scoreWeaponTriangle = (characters: readonly CharacterCard[]): number => countWeaponTriangleTrios(characters) * WEAPON_TRIANGLE_TRIO_BONUS
 
 export const hasPegasusSisters = (characters: readonly CharacterCard[]): boolean => {
   const characterIds = new Set(characters.map((character) => character.id))
@@ -242,8 +233,7 @@ export const hasPegasusSisters = (characters: readonly CharacterCard[]): boolean
   return true
 }
 
-export const scorePegasusSisters = (characters: readonly CharacterCard[]): number =>
-  hasPegasusSisters(characters) ? PEGASUS_SISTERS_BONUS : 0
+export const scorePegasusSisters = (characters: readonly CharacterCard[]): number => (hasPegasusSisters(characters) ? PEGASUS_SISTERS_BONUS : 0)
 
 export const scoreTeamBonuses = (characters: readonly CharacterCard[]): TeamBonusScore => {
   const coverage = scoreCoverage(characters)
@@ -261,18 +251,10 @@ export const scoreTeamBonuses = (characters: readonly CharacterCard[]): TeamBonu
   }
 }
 
-export const scoreSoloThresholds = (
-  characters: readonly CharacterCard[],
-  thresholds: readonly SoloScoringThreshold[],
-): SoloThresholdScore => {
+export const scoreSoloThresholds = (characters: readonly CharacterCard[], thresholds: readonly SoloScoringThreshold[]): SoloThresholdScore => {
   const teamPhasePower = sumPhasePower(characters)
   const thresholdsByPhase = new Map<GamePhase, readonly SoloScoringThreshold[]>(
-    GAME_PHASES.map((phase) => [
-      phase,
-      thresholds
-        .filter((threshold) => threshold.phase === phase)
-        .sort((left, right) => right.minimumPower - left.minimumPower),
-    ]),
+    GAME_PHASES.map((phase) => [phase, thresholds.filter((threshold) => threshold.phase === phase).sort((left, right) => right.minimumPower - left.minimumPower)])
   )
   const perPhase = GAME_PHASES.map((phase): SoloThresholdPhaseScore => {
     const phasePower = getPhasePower(teamPhasePower, phase)

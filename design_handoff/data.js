@@ -10,7 +10,7 @@ const PHASES = [
   { key: 'early',   short: 'EARLY',  label: 'Earlygame',     chapters: 'Ch. 1–5' },
   { key: 'earlymid',short: 'E-MID',  label: 'Early Midgame', chapters: 'Ch. 6–9' },
   { key: 'mid',     short: 'MID',    label: 'Midgame',       chapters: 'Ch. 10–13' },
-  { key: 'earlylate',short:'M-LATE', label: 'Mid-Lategame',  chapters: 'Ch. 14–17' },
+  { key: 'midlate',short:'M-LATE', label: 'Mid-Lategame',  chapters: 'Ch. 14–17' },
   { key: 'late',    short: 'LATE',   label: 'Lategame',      chapters: 'Ch. 18–20' },
 ];
 
@@ -28,7 +28,7 @@ const WEAPONS = {
   Stone: { beats: null },
 };
 
-// Character pool. p = [early, earlymid, mid, earlylate, late], each 0–4.
+// Character pool. p = [early, earlymid, mid, midlate, late], each 0–4.
 // role tags drive the bonus/penalty engine (healer / defensive / flier…).
 const POOL = [
   { id:'marth',   name:'Marth',   cls:'Lord',        wpn:'Sword', p:[2,3,3,3,3], tags:['lord'] },

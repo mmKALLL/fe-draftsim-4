@@ -91,7 +91,7 @@ flex wider. All layouts use flex/grid — no fixed-height scroll regions.
 
 ### Phases (always in this order)
 `early` (Earlygame) → `earlymid` (Early Midgame) → `mid` (Midgame) →
-`earlylate` (**Mid-Lategame**, label "M-LATE") → `late` (Lategame).
+`midlate` (**Mid-Lategame**, label "M-LATE") → `late` (Lategame).
 Each character has a 5-tuple `p: [n,n,n,n,n]`, each **0–4**.
 
 ### Scoring — Versus (default)

@@ -1,8 +1,8 @@
-export const GAME_PHASES = ['earlygame', 'earlyMidgame', 'midgame', 'midLategame', 'lategame'] as const
+export const GAME_PHASES = ['early', 'earlymid', 'mid', 'midlate', 'late'] as const
 
 export type GamePhase = (typeof GAME_PHASES)[number]
 
-export type PhasePower = readonly [earlygame: number, earlyMidgame: number, midgame: number, midLategame: number, lategame: number]
+export type PhasePower = readonly [early: number, earlymid: number, mid: number, midlate: number, late: number]
 
 export type PlayerCount = 2 | 3 | 4 | 5 | 6
 
@@ -53,14 +53,17 @@ export const CLASSES = [
 
 export type Class = (typeof CLASSES)[number]
 
-export type CoverageGroupId = 'magic' | 'healing' | 'pierce' | 'defense' | 'movement'
+export type CoverageGroupId = 'mage' | 'cleric' | 'ranged' | 'defense' | 'mobility'
 
 export type PhaseScoreSpread = readonly number[]
 
 export interface CoverageGroup {
   id: CoverageGroupId
   label: string
-  fulfilledBy: readonly Class[]
+  hint: string
+  fulfilledByClasses: readonly Class[]
+  fulfilledByWeapons: readonly WeaponType[]
+  fulfilledByMovements: readonly MovementType[]
   missedPenalty: number
 }
 
