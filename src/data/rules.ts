@@ -19,33 +19,33 @@ export const DEFAULT_DRAFT_SETTINGS = {
 
 export const REQUIRED_COVERAGE_GROUPS = [
   {
-    id: 'pierceDefense',
-    label: 'Pierce defense',
-    fulfilledBy: ['mage'],
+    id: 'magic',
+    label: 'Magic',
+    fulfilledBy: ['mage', 'sage', 'bishop', 'darkMage', 'sorcerer'],
     missedPenalty: -1,
   },
   {
     id: 'healing',
     label: 'Healing',
-    fulfilledBy: ['cleric'],
+    fulfilledBy: ['curate', 'cleric', 'bishop', 'sage', 'sorcerer'],
     missedPenalty: -1,
   },
   {
-    id: 'flyingCounterplay',
-    label: 'Flying counterplay',
-    fulfilledBy: ['archer', 'ballista'],
+    id: 'pierce',
+    label: 'Pierce',
+    fulfilledBy: ['archer', 'sniper', 'hunter', 'horseman', 'ballistician'],
     missedPenalty: -1,
   },
   {
     id: 'defense',
     label: 'Defense',
-    fulfilledBy: ['knight', 'cavalier'],
+    fulfilledBy: ['knight', 'general', 'cavalier', 'paladin'],
     missedPenalty: -1,
   },
   {
     id: 'movement',
     label: 'Movement',
-    fulfilledBy: ['cavalier', 'pegasus'],
+    fulfilledBy: ['cavalier', 'paladin', 'horseman', 'pegasusKnight', 'dracoknight'],
     missedPenalty: -1,
   },
 ] as const satisfies readonly CoverageGroup[]

@@ -18,16 +18,49 @@ export type WeaponType = 'sword' | 'lance' | 'axe' | 'bow' | 'tome' | 'staff' | 
 
 export type MovementType = 'infantry' | 'armored' | 'cavalry' | 'flier' | 'dragon' | 'generic'
 
-export type RoleTag = 'mage' | 'cleric' | 'archer' | 'ballista' | 'knight' | 'cavalier' | 'pegasus' | 'flier' | 'generic'
+export const CLASSES = [
+  'lord',
+  'cavalier',
+  'paladin',
+  'knight',
+  'general',
+  'archer',
+  'sniper',
+  'hunter',
+  'horseman',
+  'pegasusKnight',
+  'dracoknight',
+  'mercenary',
+  'hero',
+  'curate',
+  'cleric',
+  'bishop',
+  'myrmidon',
+  'swordmaster',
+  'fighter',
+  'warrior',
+  'pirate',
+  'berserker',
+  'mage',
+  'sage',
+  'darkMage',
+  'sorcerer',
+  'thief',
+  'manakete',
+  'ballistician',
+  'freelancer',
+] as const
 
-export type CoverageGroupId = 'pierceDefense' | 'healing' | 'flyingCounterplay' | 'defense' | 'movement'
+export type Class = (typeof CLASSES)[number]
+
+export type CoverageGroupId = 'magic' | 'healing' | 'pierce' | 'defense' | 'movement'
 
 export type PhaseScoreSpread = readonly number[]
 
 export interface CoverageGroup {
   id: CoverageGroupId
   label: string
-  fulfilledBy: readonly RoleTag[]
+  fulfilledBy: readonly Class[]
   missedPenalty: number
 }
 
@@ -49,10 +82,11 @@ export interface Participant {
 export interface CharacterCard {
   id: string
   name: string
-  phasePower?: PhasePower
+  phasePower: PhasePower
+  total: number
+  class: Class
   weapons: readonly WeaponType[]
   movement: MovementType
-  roles: readonly RoleTag[]
   effects?: readonly CardEffectId[]
   notes?: string
 }
@@ -75,56 +109,3 @@ export type CardEffectTrigger = 'onDrafted' | 'beforeScoring' | 'duringPhaseScor
 export type CardEffectScope = 'self' | 'ownedTeam' | 'ownedCard' | 'opponentCard' | 'coverageGroup' | 'weaponTriangle' | 'phase'
 
 export type CardEffectId = 'copyOwnedCard' | 'phaseSpecialistBoost' | 'weaponTriangleWildcard' | 'supportPairBonus' | 'coverageSubstitute' | 'denyOpponentBonus'
-
-export interface CardEffectIdea {
-  id: CardEffectId
-  name: string
-  trigger: CardEffectTrigger
-  scope: CardEffectScope
-  description: string
-}
-
-export const CARD_EFFECT_IDEAS = [
-  {
-    id: 'copyOwnedCard',
-    name: 'Copy Owned Card',
-    trigger: 'manualChoice',
-    scope: 'ownedCard',
-    description: 'Xane can become a copy of another drafted card on the same team for scoring.',
-  },
-  {
-    id: 'phaseSpecialistBoost',
-    name: 'Phase Specialist Boost',
-    trigger: 'duringPhaseScoring',
-    scope: 'phase',
-    description: 'A specialist adds a small bonus in one named phase when the team already has at least one point there.',
-  },
-  {
-    id: 'weaponTriangleWildcard',
-    name: 'Weapon Triangle Wildcard',
-    trigger: 'afterTeamComplete',
-    scope: 'weaponTriangle',
-    description: 'The card can count as sword, lance, or axe for one completed weapon-triangle trio.',
-  },
-  {
-    id: 'supportPairBonus',
-    name: 'Support Pair Bonus',
-    trigger: 'afterTeamComplete',
-    scope: 'ownedTeam',
-    description: 'The card grants a bonus when drafted with a named partner or sibling group.',
-  },
-  {
-    id: 'coverageSubstitute',
-    name: 'Coverage Substitute',
-    trigger: 'beforeScoring',
-    scope: 'coverageGroup',
-    description: 'The card can satisfy one missing required coverage group without adding weapon access.',
-  },
-  {
-    id: 'denyOpponentBonus',
-    name: 'Deny Opponent Bonus',
-    trigger: 'whenRevealed',
-    scope: 'opponentCard',
-    description: 'The card can suppress one opposing card bonus in hidden-picks variants when revealed.',
-  },
-] as const satisfies readonly CardEffectIdea[]
