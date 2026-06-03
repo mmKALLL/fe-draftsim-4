@@ -1,24 +1,14 @@
 import type { ReactNode } from 'react'
-import { DRAFT_PACK_CHARACTER_IDS, type DraftState, type SetupState } from '../app-state'
+import { DRAFT_PACK_SIZE, type DraftState, type SetupState } from '../app-state'
+import { CoveragePanel } from '../components/CoveragePanel'
 import { ScreenHeader } from '../components/ScreenHeader'
 import { WeaponGlyph } from '../components/icons'
-import { CHARACTER_ROSTER } from '../data/characters'
-import { getCurrentDrafter } from '../draft-utils'
+import { getCurrentDrafter, getCurrentPackCharacters, isDraftComplete } from '../draft-utils'
 import { buildResultsModel, getChartScale, PHASE_SHORT_LABELS, type ResultsPlayer } from '../results-utils'
 import type { CharacterCard, PhasePower, WeaponType } from '../types'
 
 const BAR_HEIGHTS = [3, 10, 18, 28, 34] as const
 const DRAFT_CHART_X_VALUES = [28, 96, 164, 232, 300] as const
-
-const PACK_CARDS = DRAFT_PACK_CHARACTER_IDS.map((id) => {
-  const character = CHARACTER_ROSTER.find((candidate) => candidate.id === id)
-
-  if (!character) {
-    throw new Error(`Missing static draft character: ${id}`)
-  }
-
-  return character
-})
 
 const formatClassName = (value: CharacterCard['class']): string =>
   value
@@ -208,27 +198,28 @@ export const DraftScreen = ({
   setup: SetupState
 }): ReactNode => {
   const chartPlayers = buildResultsModel(setup, draft, { usePlaceholders: false }).players
-  const pickedIds = new Set(draft.pickedCharacterIds)
-  const remainingCards = PACK_CARDS.filter((character) => !pickedIds.has(character.id))
-  const nextPickNumber = Math.min(draft.pickedCharacterIds.length + 1, PACK_CARDS.length)
+  const remainingCards = getCurrentPackCharacters(setup, draft)
+  const complete = isDraftComplete(draft)
+  const nextPickNumber = Math.min(draft.roundNumber, DRAFT_PACK_SIZE)
   const currentDrafter = getCurrentDrafter(setup, draft)
-  const canPick = currentDrafter?.kind === 'human'
+  const canPick = currentDrafter?.kind === 'human' && !complete
   const currentDrafterLabel = currentDrafter?.id === setup.players[0]?.id ? 'Your turn' : currentDrafter ? `${currentDrafter.name}'s turn` : `${draft.picks.length} picked`
-  const draftMeta = remainingCards.length > 0 ? `${remainingCards.length} in pack · ${currentDrafterLabel}` : `${draft.picks.length} picked`
+  const draftMeta = complete ? `${draft.picks.length} picked` : `${remainingCards.length} in pack · ${currentDrafterLabel}`
+  const coveragePlayer = chartPlayers.find((player) => player.id === currentDrafter?.id) ?? chartPlayers.find((player) => player.you) ?? chartPlayers[0]
 
   return (
     <main className="app-root draft-screen" data-app="fe-draftsim" aria-label="Draft phase">
-      <ScreenHeader backLabel="Back to setup" eyebrow="Round 1 / 10" title="Draft" onBack={onBack} />
+      <ScreenHeader backLabel="Back to setup" eyebrow={`Round ${nextPickNumber} / ${DRAFT_PACK_SIZE}`} title="Draft" onBack={onBack} />
       <div className="draft-screen__body">
         <section className="draft-pack" aria-labelledby="draft-pack-title">
           <div className="draft-pack__header">
             <h2 className="draft-pack__title" id="draft-pack-title">
               Pick {nextPickNumber}
-              <span>of {PACK_CARDS.length}</span>
+              <span>of {DRAFT_PACK_SIZE}</span>
             </h2>
             <p className="draft-pack__meta">{draftMeta}</p>
           </div>
-          {remainingCards.length > 0 ? (
+          {!complete && remainingCards.length > 0 ? (
             <div className="draft-pack__grid">
               {remainingCards.map((character) => (
                 <DraftCard character={character} disabled={!canPick} key={character.id} onPick={onPick} />
@@ -236,8 +227,8 @@ export const DraftScreen = ({
             </div>
           ) : (
             <div className="draft-pack__empty">
-              <h3 className="draft-pack__empty-title">Pack Complete</h3>
-              <p className="draft-pack__empty-copy">{draft.pickedCharacterIds.length} picks recorded</p>
+              <h3 className="draft-pack__empty-title">Draft Complete</h3>
+              <p className="draft-pack__empty-copy">{draft.picks.length} picks recorded</p>
               <button className="draft-pack__empty-action" type="button" onClick={onViewResults}>
                 View Results
               </button>
@@ -245,6 +236,7 @@ export const DraftScreen = ({
           )}
         </section>
         <PhasePowerChart onDetails={onViewResults} players={chartPlayers} />
+        {coveragePlayer ? <CoveragePanel player={coveragePlayer} /> : null}
       </div>
     </main>
   )

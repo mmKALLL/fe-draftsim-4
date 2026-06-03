@@ -1,4 +1,4 @@
-import { DRAFT_PACK_CHARACTER_IDS, type DraftState, type SetupParticipant, type SetupState } from './app-state'
+import { DRAFT_PACK_CHARACTER_IDS, DRAFT_PACK_SIZE, type DraftState, type SetupParticipant, type SetupState } from './app-state'
 import { CHARACTER_ROSTER } from './data/characters'
 import { GAME_PHASES, type CharacterCard, type GamePhase, type PhasePower, type WeaponType } from './types'
 import { scoreRankedPhases, scoreTeamBonuses, sumPhasePower, type TeamBonusScore } from './scoring-utils'
@@ -121,7 +121,7 @@ const buildPlaceholderTeam = ({
 export const buildResultsModel = (setup: SetupState, draft: DraftState, options: BuildResultsModelOptions = {}): ResultsModel => {
   const usePlaceholders = options.usePlaceholders ?? true
   const usedIds = new Set<CharacterCard['id']>()
-  const targetTeamSize = Math.max(DRAFT_PACK_CHARACTER_IDS.length, draft.pickedCharacterIds.length)
+  const targetTeamSize = DRAFT_PACK_SIZE
   const teams =
     draft.picks.length > 0 || !usePlaceholders
       ? buildRealTeams(setup, draft)

@@ -21,8 +21,16 @@ export interface SetupState {
 export interface DraftState {
   pickedCharacterIds: CharacterCard['id'][]
   picks: DraftPickRecord[]
+  packs: DraftPack[]
+  roundNumber: number
   currentTurnIndex: number
   cpuStrategies: Partial<Record<SetupParticipant['id'], CpuDraftStrategyId>>
+}
+
+export interface DraftPack {
+  id: string
+  originPlayerId: SetupParticipant['id']
+  cardIds: CharacterCard['id'][]
 }
 
 export interface DraftPickRecord {
@@ -34,6 +42,7 @@ export interface DraftPickRecord {
 
 export const MIN_PLAYERS = 2
 export const MAX_PLAYERS = 6
+export const DRAFT_PACK_SIZE = 10
 
 export const DRAFT_PACK_CHARACTER_IDS = ['caeda', 'barst', 'hardin', 'wolf', 'navarre', 'merric', 'lena', 'jake', 'athena', 'wendell'] as const
 
@@ -52,6 +61,8 @@ export const DEFAULT_SETUP_STATE: SetupState = {
 export const DEFAULT_DRAFT_STATE: DraftState = {
   pickedCharacterIds: [],
   picks: [],
+  packs: [],
+  roundNumber: 1,
   currentTurnIndex: 0,
   cpuStrategies: {},
 }

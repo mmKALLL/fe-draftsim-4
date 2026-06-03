@@ -1791,123 +1791,7 @@ canvas {
   color: var(--crimson);
 }
 
-.power-table-section {
-  margin-top: 12px;
-}
-
-.power-table {
-  overflow: hidden;
-  border: 1px solid var(--line-strong);
-  border-radius: 8px;
-}
-
-.power-table__header,
-.power-table__row {
-  display: grid;
-  grid-template-columns: minmax(72px, 1fr) repeat(5, minmax(0, 0.54fr)) 34px;
-  align-items: center;
-  gap: 2px;
-}
-
-.power-table__header {
-  padding: 8px 11px;
-  border-bottom: 1px solid var(--line-strong);
-  background: var(--paper-3);
-  color: var(--ink-faint);
-  font-family: var(--font-mono);
-  font-size: 8px;
-  text-align: center;
-  text-transform: uppercase;
-}
-
-.power-table__header span:first-child {
-  text-align: left;
-}
-
-.power-table__header span:last-child {
-  text-align: right;
-}
-
-.power-table__row {
-  min-height: 42px;
-  padding: 9px 11px;
-  border-bottom: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.power-table__row:last-child {
-  border-bottom: 0;
-}
-
-.power-table__row--you {
-  background: rgba(157, 59, 44, 0.07);
-}
-
-.power-table__player {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.power-table__player span:last-child {
-  overflow: hidden;
-  color: var(--ink);
-  font-family: var(--font-display);
-  font-size: 13.5px;
-  font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.power-table__dot {
-  width: 6px;
-  height: 6px;
-  flex: 0 0 auto;
-  border-radius: 999px;
-  background: var(--ink-faint);
-}
-
-.power-table__dot--human {
-  background: var(--sage);
-}
-
-.power-table__phase {
-  position: relative;
-  color: var(--ink-soft);
-  font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1;
-  text-align: center;
-}
-
-.power-table__phase--leader {
-  color: var(--bronze-deep);
-}
-
-.power-table__phase--leader::after {
-  content: "";
-  width: 12px;
-  height: 2px;
-  position: absolute;
-  left: 50%;
-  bottom: -6px;
-  transform: translateX(-50%);
-  border-radius: 999px;
-  background: var(--bronze);
-}
-
-.power-table__sum {
-  color: var(--ink);
-  font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1;
-  text-align: right;
-}
-
-.power-table__caption {
+.leaderboard-caption {
   margin: 9px 2px 0;
   display: flex;
   align-items: center;
@@ -1917,7 +1801,7 @@ canvas {
   line-height: 1.2;
 }
 
-.power-table__caption span {
+.leaderboard-caption span {
   width: 10px;
   height: 2px;
   border-radius: 999px;

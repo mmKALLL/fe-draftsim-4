@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import type { DraftState, SetupParticipant, SetupState } from '../app-state'
+import { CoveragePanel, formatBonus } from '../components/CoveragePanel'
 import { Chevron, WeaponGlyph } from '../components/icons'
 import { buildResultsModel, formatClassName, getChartScale, getPrimaryWeapon, PHASE_SHORT_LABELS, type ResultsPlayer } from '../results-utils'
 import type { CharacterCard } from '../types'
@@ -22,8 +23,6 @@ interface ChartSeries {
 }
 
 const PHASE_X_VALUES = [30, 100, 170, 240, 310] as const
-
-const formatBonus = (value: number): string => (value > 0 ? `+${value}` : '-')
 
 const getPhasePointClass = (value: number): string => {
   if (value >= 5) {
@@ -48,6 +47,16 @@ const getPolylinePoints = (values: readonly number[], maxValue: number): string 
     .join(' ')
 
 const sumValues = (values: readonly number[]): number => values.reduce((sum, value) => sum + value, 0)
+
+const getPhasePowerClass = (player: ResultsPlayer, phaseIndex: number, phaseLeaders: readonly string[]): string => {
+  const power = player.phasePower[phaseIndex] ?? 0
+
+  if (phaseLeaders[phaseIndex] === player.id && power > 0) {
+    return 'standings-point standings-point--max'
+  }
+
+  return power > 0 ? 'standings-point' : 'standings-point standings-point--zero'
+}
 
 const buildScoreChartSeries = (players: readonly ResultsPlayer[]): readonly ChartSeries[] =>
   players.map((player) => ({
@@ -168,33 +177,6 @@ const ChartLegend = ({ series }: { series: readonly ChartSeries[] }): ReactNode 
   </div>
 )
 
-const CoveragePanel = ({ player }: { player: ResultsPlayer }): ReactNode => (
-  <section className="coverage-panel" aria-label={`${player.name} coverage bonuses`}>
-    <div className="coverage-panel__header">
-      <span>{player.you ? 'Your Coverage' : `${player.name} Coverage`}</span>
-      <strong>{formatBonus(player.bonus.coverage.total)} pts</strong>
-    </div>
-    <div className="coverage-panel__groups">
-      {player.bonus.coverage.groups.map((group) => (
-        <span className={group.covered ? 'coverage-tile coverage-tile--met' : 'coverage-tile'} key={group.group.id}>
-          <span className="coverage-tile__label">{group.group.label}</span>
-          <span className="coverage-tile__mark">{group.covered ? '+' : 'x'}</span>
-        </span>
-      ))}
-    </div>
-    <div className="coverage-panel__footer">
-      <span>
-        Weapon-triangle trios <strong>x{player.bonus.weaponTriangleTrios}</strong> <span>(S/L/A)</span>
-      </span>
-      <strong>{player.bonus.weaponTriangleBonus > 0 ? `+${player.bonus.weaponTriangleBonus}` : '-'}</strong>
-    </div>
-    <div className="coverage-panel__footer">
-      <span>Triangle attack</span>
-      <strong>{player.bonus.pegasusSistersBonus > 0 ? `+${player.bonus.pegasusSistersBonus}` : '-'}</strong>
-    </div>
-  </section>
-)
-
 const ComparisonView = ({
   chartAriaLabel,
   chartSeries,
@@ -225,80 +207,82 @@ const ComparisonView = ({
   </div>
 )
 
+const StandingsTable = ({
+  mode,
+  onViewPlayerDetails,
+  phaseLeaders = [],
+  rankedPlayers,
+}: {
+  mode: 'scores' | 'power'
+  onViewPlayerDetails: (playerId: SetupParticipant['id']) => void
+  phaseLeaders?: readonly string[]
+  rankedPlayers: readonly ResultsPlayer[]
+}): ReactNode => {
+  const ariaLabel = mode === 'scores' ? 'Score leaderboard' : 'Team power leaderboard'
+  const totalLabel = mode === 'scores' ? 'Pts' : 'Pow'
+
+  return (
+    <section className="leaderboard" aria-label={ariaLabel}>
+      <div className="leaderboard__header">
+        <span>Player</span>
+        <span>EAR</span>
+        <span>E-M</span>
+        <span>MID</span>
+        <span>M-L</span>
+        <span>LATE</span>
+        <span>Bon</span>
+        <span>{totalLabel}</span>
+      </div>
+      <div className="leaderboard__rows">
+        {rankedPlayers.map((player) => {
+          const phaseValues = mode === 'scores' ? player.phasePoints : player.phasePower
+          const total = mode === 'scores' ? player.total : sumValues(player.phasePower)
+
+          return (
+            <button className={player.you ? 'leaderboard-row leaderboard-row--you' : 'leaderboard-row'} key={player.id} type="button" onClick={() => onViewPlayerDetails(player.id)}>
+              <span className="leaderboard-row__player">
+                <span className={player.rank === 1 ? 'leaderboard-row__rank leaderboard-row__rank--first' : 'leaderboard-row__rank'}>{player.rank}</span>
+                <span className={player.you ? 'leaderboard-row__name leaderboard-row__name--you' : 'leaderboard-row__name'}>{player.name}</span>
+              </span>
+              {phaseValues.map((value, index) => (
+                <span className={mode === 'scores' ? getPhasePointClass(value) : getPhasePowerClass(player, index, phaseLeaders)} key={`${player.id}-${index}`}>
+                  {value}
+                </span>
+              ))}
+              <span className={player.bonus.total > 0 ? 'leaderboard-row__bonus leaderboard-row__bonus--positive' : 'leaderboard-row__bonus'}>{formatBonus(player.bonus.total)}</span>
+              <strong className={player.you ? 'leaderboard-row__total leaderboard-row__total--you' : 'leaderboard-row__total'}>{total}</strong>
+            </button>
+          )
+        })}
+      </div>
+    </section>
+  )
+}
+
 const ScoresTable = ({
   onViewPlayerDetails,
   rankedPlayers,
 }: {
   onViewPlayerDetails: (playerId: SetupParticipant['id']) => void
   rankedPlayers: readonly ResultsPlayer[]
-}): ReactNode => (
-  <section className="leaderboard" aria-label="Leaderboard">
-    <div className="leaderboard__header">
-      <span>Player</span>
-      <span>EAR</span>
-      <span>E-M</span>
-      <span>MID</span>
-      <span>M-L</span>
-      <span>LATE</span>
-      <span>Bon</span>
-      <span>Pts</span>
-    </div>
-    <div className="leaderboard__rows">
-      {rankedPlayers.map((player) => (
-        <button className={player.you ? 'leaderboard-row leaderboard-row--you' : 'leaderboard-row'} key={player.id} type="button" onClick={() => onViewPlayerDetails(player.id)}>
-          <span className="leaderboard-row__player">
-            <span className={player.rank === 1 ? 'leaderboard-row__rank leaderboard-row__rank--first' : 'leaderboard-row__rank'}>{player.rank}</span>
-            <span className={player.you ? 'leaderboard-row__name leaderboard-row__name--you' : 'leaderboard-row__name'}>{player.name}</span>
-          </span>
-          {player.phasePoints.map((points, index) => (
-            <span className={getPhasePointClass(points)} key={`${player.id}-${index}`}>
-              {points}
-            </span>
-          ))}
-          <span className={player.bonus.total > 0 ? 'leaderboard-row__bonus leaderboard-row__bonus--positive' : 'leaderboard-row__bonus'}>{formatBonus(player.bonus.total)}</span>
-          <strong className={player.you ? 'leaderboard-row__total leaderboard-row__total--you' : 'leaderboard-row__total'}>{player.total}</strong>
-        </button>
-      ))}
-    </div>
-  </section>
-)
+}): ReactNode => <StandingsTable mode="scores" onViewPlayerDetails={onViewPlayerDetails} rankedPlayers={rankedPlayers} />
 
 const PowerTable = ({
+  onViewPlayerDetails,
   phaseLeaders,
-  players,
+  rankedPlayers,
 }: {
+  onViewPlayerDetails: (playerId: SetupParticipant['id']) => void
   phaseLeaders: readonly string[]
-  players: readonly ResultsPlayer[]
+  rankedPlayers: readonly ResultsPlayer[]
 }): ReactNode => (
-  <section className="power-table-section" aria-label="Team power table">
-    <section className="power-table" aria-label="Team power by phase">
-      <div className="power-table__header">
-        <span>Player</span>
-        {PHASE_SHORT_LABELS.map((label) => (
-          <span key={label}>{label}</span>
-        ))}
-        <span>Σ</span>
-      </div>
-      {players.map((player) => (
-        <div className={player.you ? 'power-table__row power-table__row--you' : 'power-table__row'} key={player.id}>
-          <span className="power-table__player">
-            <span className={player.cpu ? 'power-table__dot' : 'power-table__dot power-table__dot--human'} />
-            <span>{player.name}</span>
-          </span>
-          {player.phasePower.map((power, index) => (
-            <span className={phaseLeaders[index] === player.id ? 'power-table__phase power-table__phase--leader' : 'power-table__phase'} key={`${player.id}-${index}`}>
-              {power}
-            </span>
-          ))}
-          <strong className="power-table__sum">{player.phasePower.reduce((sum, power) => sum + power, 0)}</strong>
-        </div>
-      ))}
-    </section>
-    <p className="power-table__caption">
+  <>
+    <StandingsTable mode="power" onViewPlayerDetails={onViewPlayerDetails} phaseLeaders={phaseLeaders} rankedPlayers={rankedPlayers} />
+    <p className="leaderboard-caption">
       <span />
-      phase leader · scores 5 pts
+      phase leader
     </p>
-  </section>
+  </>
 )
 
 const ScoresView = ({
@@ -327,10 +311,12 @@ const ScoresView = ({
 }
 
 const PowerView = ({
+  onViewPlayerDetails,
   phaseLeaders,
   players,
   rankedPlayers,
 }: {
+  onViewPlayerDetails: (playerId: SetupParticipant['id']) => void
   phaseLeaders: readonly string[]
   players: readonly ResultsPlayer[]
   rankedPlayers: readonly ResultsPlayer[]
@@ -346,7 +332,7 @@ const PowerView = ({
       legendSeries={buildPowerChartSeries(rankedPlayers)}
       playerForCoverage={you}
     >
-      <PowerTable phaseLeaders={phaseLeaders} players={players} />
+      <PowerTable onViewPlayerDetails={onViewPlayerDetails} phaseLeaders={phaseLeaders} rankedPlayers={rankedPlayers} />
     </ComparisonView>
   )
 }
@@ -460,7 +446,7 @@ export const ResultsScreen = ({
         {view === 'scores' ? (
           <ScoresView onViewPlayerDetails={onViewPlayerDetails} players={model.players} rankedPlayers={model.rankedPlayers} />
         ) : view === 'power' ? (
-          <PowerView phaseLeaders={model.phaseLeaders} players={model.players} rankedPlayers={model.rankedPlayers} />
+          <PowerView onViewPlayerDetails={onViewPlayerDetails} phaseLeaders={model.phaseLeaders} players={model.players} rankedPlayers={model.rankedPlayers} />
         ) : (
           <RostersView onSelectPlayer={setSelectedRosterPlayerId} onViewPlayerDetails={onViewPlayerDetails} players={model.players} selectedPlayerId={selectedRosterPlayerId} />
         )}
