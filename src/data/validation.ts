@@ -1,3 +1,4 @@
+import { sumPhasePowerValues } from '../character-utils'
 import type { CharacterCard, PhasePower } from '../types'
 
 export interface CharacterTotalMismatch {
@@ -8,11 +9,9 @@ export interface CharacterTotalMismatch {
   actualTotal: number
 }
 
-const sumPhasePower = (phasePower: PhasePower): number => phasePower.reduce((sum, power) => sum + power, 0)
-
 export const findCharacterTotalMismatches = (characters: readonly CharacterCard[]): CharacterTotalMismatch[] =>
   characters.flatMap((character) => {
-    const expectedTotal = sumPhasePower(character.phasePower)
+    const expectedTotal = sumPhasePowerValues(character.phasePower)
 
     if (expectedTotal === character.total) {
       return []

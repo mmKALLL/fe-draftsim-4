@@ -18,6 +18,8 @@ export type WeaponType = 'sword' | 'lance' | 'axe' | 'bow' | 'tome' | 'staff' | 
 
 export type MovementType = 'infantry' | 'armored' | 'cavalry' | 'flier' | 'dragon' | 'generic'
 
+export type CharacterTier = 'A' | 'B' | 'C' | 'D'
+
 export const CLASSES = [
   'lord',
   'cavalier',

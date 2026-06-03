@@ -1,5 +1,4 @@
 import './styles.css'
-import { createElement } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from './App'
 import { CHARACTER_ROSTER } from './data/characters'
@@ -13,4 +12,4 @@ if (!app) {
   throw new Error('Missing #app root')
 }
 
-createRoot(app).render(createElement(App))
+createRoot(app).render(<App />)
